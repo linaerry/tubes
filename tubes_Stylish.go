@@ -2,13 +2,54 @@ package main
 
 import "fmt"
 
-type outfit struct{
-	atasan string
-	bawah string
-	sepatu string
+const NMAX int = 100
+
+type outfit struct {
+	atasan    string
+	bawah     string
+	sepatu    string
 	aksesoris string
 }
 
-func main(){
-	var
+type tabOutfit [NMAX]outfit
+
+func tambahOutfit(A *tabOutfit, n *int) {
+	var tambah string
+	var lanjut bool = true
+
+	for tambah && *n < NMAX {
+		fmt.Println("Masukkan data outfit:")
+		fmt.Print("Atasan: ")
+		fmt.Scan(&A[*n].atasan)
+		fmt.Print("\nBawahan: ")
+		fmt.Scan(&A[*n].bawah)
+		fmt.Print("\nSepatu: ")
+		fmt.Scan(&A[*n].sepatu)
+		fmt.Print("\nAksesoris: ")
+		fmt.Scan(&A[*n].aksesoris)
+		*n++
+
+		if *n < NMAX {
+			fmt.Print("Tambah outfit lagi? (y/n): ")
+			fmt.Scan(&tambah)
+			if tambah != "y" {
+				lanjut = false
+			}
+		} else {
+			fmt.Println("Lemari penuh!")
+			lanjut = false
+		}
+	}
+}
+
+func cetakLemari(A tabOutfit, n int) {
+	var i int
+	if n == 0 {
+		fmt.Println("Lemari kosong.")
+	} else {
+		fmt.Println("\nIsi Lemari:")
+		for i = 0; i < n; i++ {
+			fmt.Printf("OUTFIT%d: %s - %s - %s - %s\n", i+1, A[i].atasan, A[i].bawah, A[i].sepatu, A[i].aksesoris)
+		}
+	}
 }
