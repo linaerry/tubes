@@ -53,3 +53,31 @@ func cetakLemari(A tabOutfit, n int) {
 		}
 	}
 }
+func urutkanPakaian(A *tabOutfit, n int){
+	var i int
+	
+	for i = 0; i < n-1; i++{
+		for j:=	0; j < n-i-1; j++{
+			if j[i].atasan, > A[j+1].atasan{
+				A[j], A[j+1] = A[j+1], A[j]
+			}
+		}
+	}
+	fmt.Println("Outfit sudah diurutkan sesuai nama atasan.")
+}
+func cariPakaian(A tabOutfit, n int, keyword string){
+	var cari bool
+
+	cari = false
+	for i:= 0; i < n; i++{
+		if A[i].atasan == keyword{
+			fmt.Printf("ditemukan di indeks %d: \n", i)
+			fmt.Printf("%s - %s - %s - %s\n", A[i].atasan, A[i].bawah, A[i].sepatu, A[i].aksesoris)
+			cari = true
+			break
+		}
+	}
+	if !cari{
+		fmt.Println("outfit dengan atasan tersebut tidak tersedia")
+	}
+}
