@@ -81,3 +81,38 @@ func cariPakaian(A tabOutfit, n int, keyword string){
 		fmt.Println("outfit dengan atasan tersebut tidak tersedia")
 	}
 }
+func main(){
+	var lemari tabOufit
+	var n int
+	var pilhan int
+	var keyword string
+
+	fmt.Println("\n=== MENU ===")
+	fmt.Println("1. Tampilkan Semua Pakaian")
+	fmt.Println("2. Tambah Pakaian)
+	fmt.Println("3. Urutkan Pakaian")
+	fmt.Println("4. Cari Pakaian")
+	fmt.Println("5. Keluar")
+	fmt.Println("Pilih Menu: ")
+
+	fmt.Scan(&pilihan)
+	
+	switch pilihan {
+		case 1 : 
+			tambahOutfit(&lemari, &n)
+		case 2 :
+			cetakLemari(lemari, n)
+		case 3 :
+			urutkanPakaian(&lemari, n)
+		case 4 : 
+			fmt.Println("Masukkan Atasan Yang Dipilih:")
+			fmt.Scan(&keyword)
+			cariPakaian(lemari, n, keyword)
+		case 5 : 
+			fmt.Println("Terima Kasih!")
+			return
+		default : 
+		fmt.Println("Pilihan Tak Tersedia")
+	}
+}
+
