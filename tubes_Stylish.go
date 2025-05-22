@@ -21,7 +21,7 @@ func inputOutfit(A *tabOutfit, n *int) {
 	var tambah string = "y"
 
 	for (tambah == "y" || tambah == "Y") && *n < NMAX {
-		fmt.Println("Masukkan data outfit:")
+		fmt.Println("Masukkan data outfit")
 		fmt.Print("Atasan: ")
 		fmt.Scan(&A[*n].atasan)
 		fmt.Print("\nBawahan: ")
@@ -72,7 +72,7 @@ func editOutfit(A tabOutfit, n int) {
 		idx--
 
 		if idx >= 0 && idx < n {
-			fmt.Println("\nMasukkan data baru untuk outfit:")
+			fmt.Println("\nMasukkan data baru untuk outfit")
 			fmt.Print("Atasan: ")
 			fmt.Scan(&A[idx].atasan)
 			fmt.Print("Bawahan: ")
@@ -168,8 +168,26 @@ func cariKategoriBinary(A tabOutfit, n int, cari int) bool {
 }
 
 //ngurutin outfit berdasarkan kategori baju
-func selectionSortkategori() {
+func selectionSortkategori(A *tabOutfit, n int) {
+	var pass, idx, i int
+	var temp outfit
 
+	pass = 0
+	for pass < n-1 {
+		idx = pass - 1
+		i = pass
+		for i < n {
+			if A[idx].kategori < A[i].kategori {
+				idx = i
+			}
+			i++
+		}
+		temp = A[pass-1]
+		A[pass-1] = A[idx]
+		A[idx] = temp
+		pass++
+	}
+	fmt.Println("Outfit sudah diurutkan berdasarkan kategori")
 }
 
 //ngurutin outfit yang terakhir dipakai ke yang paling baru dipake
@@ -239,7 +257,7 @@ func main() {
 		fmt.Println("3. Edit Outfit")
 		fmt.Println("4. Hapus Outfit")
 		fmt.Println("5. Rekomendasi Outfit")
-		fmt.Println("6. Urutkan Berdasarkan Terakhir Dipakai")
+		fmt.Println("6. Urutkan Berdasarkan Terakhir Dipakai") // jgn lupa urut sesuai selec sort kategori
 		fmt.Println("7. Cari Outfit Berdasarkan Warna")
 		fmt.Println("8. Cari Outfit Berdasarkan Kategori")
 		fmt.Println("0. Keluar")
