@@ -176,46 +176,47 @@ func cariKategoriBinary(A tabOutfit, n int, cari int) bool {
 }
 
 //ngurutin outfit berdasarkan kategori baju
-func selectionSortkategori(A *tabOutfit, n int) {
-	var pass, idx, i int
-	var temp outfit
+// //ngurutin outfit berdasarkan kategori baju
+// func selectionSortkategori(A *tabOutfit, n int) {
+// 	var pass, idx, i int
+// 	var temp outfit
 
-	pass = 0
-	for pass < n-1 {
-		idx = pass - 1
-		i = pass
-		for i < n {
-			if A[idx].kategori < A[i].kategori {
-				idx = i
-			}
-			i++
-		}
-		temp = A[pass-1]
-		A[pass-1] = A[idx]
-		A[idx] = temp
-		pass++
-	}
-	fmt.Println("Outfit sudah diurutkan berdasarkan kategori")
-}
+// 	pass = 0
+// 	for pass < n-1 {
+// 		idx = pass - 1
+// 		i = pass
+// 		for i < n {
+// 			if A[idx].kategori < A[i].kategori {
+// 				idx = i
+// 			}
+// 			i++
+// 		}
+// 		temp = A[pass-1]
+// 		A[pass-1] = A[idx]
+// 		A[idx] = temp
+// 		pass++
+// 	}
+// 	fmt.Println("Outfit sudah diurutkan berdasarkan kategori")
+// }
 
-//ngurutin outfit yang terakhir dipakai ke yang paling baru dipake
-func insertionSortTerakhirDipakai(A *tabOutfit, n int) {
-	var i, j int
-	var temp outfit
+// //ngurutin outfit yang terakhir dipakai ke yang paling baru dipake
+// func insertionSortTerakhirDipakai(A *tabOutfit, n int) {
+// 	var i, j int
+// 	var temp outfit
 
-	for i = 0; i <= n-1; i++ {
-		temp = A[i]
-		j = i - 1
+// 	for i = 0; i <= n-1; i++ {
+// 		temp = A[i]
+// 		j = i - 1
 
-		//pengurutan dari tanggal lama ke baru
-		for j >= 0 && A[i].terakhir > temp.terakhir {
-			A[j+1] = A[j]
-			j--
-		}
-		A[j+1] = temp
-	}
-	fmt.Println("Outfit sudah diurutkan sesuai terakhir digunakan")
-}
+// 		//pengurutan dari tanggal lama ke baru
+// 		for j >= 0 && A[i].terakhir > temp.terakhir {
+// 			A[j+1] = A[j]
+// 			j--
+// 		}
+// 		A[j+1] = temp
+// 	}
+// 	fmt.Println("Outfit sudah diurutkan sesuai terakhir digunakan")
+// }
 
 //rekomen
 func rekomendasiOutfit(A tabOutfit, n int) {
