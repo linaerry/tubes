@@ -5,36 +5,38 @@ import "fmt"
 const NMAX int = 100
 
 type outfit struct {
-	atasan    string
-	bawah     string
-	sepatu    string
+	atasan string
+	bawah string
+	sepatu string
 	aksesoris string
-	kategori  int    //1 = kasual, 2 = semi, 3 = formal
-	cuaca     string //"panas", "dingin", "hujan"
-	terakhir  int    //terakhir digunakan
+	kategori int    //1 = kasual, 2 = semi, 3 = formal
+	cuaca string //"panas", "dingin", "hujan"
+	terakhir int    //terakhir digunakan
 }
 
 type tabOutfit [NMAX]outfit
 
 //menginput atau nambah baju
 func inputOutfit(A *tabOutfit, n *int) {
-	var tambah string = "y"
+	var tambah string
+	tambah = "y"
 
 	for (tambah == "y" || tambah == "Y") && *n < NMAX {
-		fmt.Println("Masukkan data outfit")
+		fmt.Println("Masukkan data outfit:")
 		fmt.Print("Atasan: ")
 		fmt.Scan(&A[*n].atasan)
-		fmt.Print("\nBawahan: ")
+		fmt.Print("Bawahan: ")
 		fmt.Scan(&A[*n].bawah)
-		fmt.Print("\nSepatu: ")
+		fmt.Print("Sepatu: ")
 		fmt.Scan(&A[*n].sepatu)
-		fmt.Print("\nAksesoris: ")
+		fmt.Print("Aksesoris: ")
 		fmt.Scan(&A[*n].aksesoris)
 		fmt.Print("Tingkat kategori (1=kasual, 2=semi, 3=formal): ")
 		fmt.Scan(&A[*n].kategori)
-		fmt.Print("Tanggal terakhir dipakai (yyyymmdd): ")
-		fmt.Scan(&A[*n].terakhir)
-		*n++
+		fmt.Print("Cocok digunakan di cuaca apa?(panas, dingin, hujan): ")
+		fmt.Scan(&A[*n].cuaca)
+
+		*n = *n + 1
 
 		if *n < NMAX {
 			fmt.Print("Tambah outfit lagi? (y/n): ")
@@ -49,47 +51,56 @@ func inputOutfit(A *tabOutfit, n *int) {
 //output
 func tampilLemari(A tabOutfit, n int) {
 	var i int
-	if n == 0 {
-		fmt.Println("Lemari kosong")
-	} else {
-		for i = 0; i <= n-1; i++ {
-			fmt.Printf("OUTFIT%d: %s - %s - %s - %s\n", i+1, A[i].atasan, A[i].bawah, A[i].sepatu, A[i].aksesoris)
+	if n != 0 {
+		for i = 0; i < n; i++ {
+			fmt.Printf("OUTFIT-%d: %s - %s - %s - %s\n", i+1, A[i].atasan, A[i].bawah, A[i].sepatu, A[i].aksesoris)
 		}
+	} else {
+		fmt.Println("Lemari kosong")
 	}
 }
 
 //kalo pengen ngedit isi lemari
-func editOutfit(A tabOutfit, n int) {
-	var i, idx int
+func editOutfit(A *tabOutfit, n int) {
+	var i, kode, found int
+	found = -1
+
 	if n != 0 {
-		fmt.Println("\nDaftar Outfit:")
-		for i = 0; i <= n-1; i++ {
-			fmt.Printf("OUTFIT%d: %s - %s - %s - %s\n", i+1, A[i].atasan, A[i].bawah, A[i].sepatu, A[i].aksesoris)
+		fmt.Println("Daftar Outfit:")
+		tampilLemari(*A, n)
+		fmt.Println()
+		fmt.Print("Masukkan nomor outfit yang ingin diedit: ")
+		fmt.Scan(&kode)
+
+		i = 0
+		for i < n && found == -1 {
+			if i+1 == kode {
+				found = i
+			}
+			i++
 		}
 
-		fmt.Print("\nMasukkan nomor outfit yang ingin diedit: ")
-		fmt.Scan(&idx)
-		idx--
-
-		if idx >= 0 && idx < n {
-			fmt.Println("\nMasukkan data baru untuk outfit")
+		if found != -1 {
+			fmt.Println("\nMasukkan data baru untuk outfit:")
 			fmt.Print("Atasan: ")
-			fmt.Scan(&A[idx].atasan)
+			fmt.Scan(&A[found].atasan)
 			fmt.Print("Bawahan: ")
-			fmt.Scan(&A[idx].bawah)
+			fmt.Scan(&A[found].bawah)
 			fmt.Print("Sepatu: ")
-			fmt.Scan(&A[idx].sepatu)
+			fmt.Scan(&A[found].sepatu)
 			fmt.Print("Aksesoris: ")
-			fmt.Scan(&A[idx].aksesoris)
+			fmt.Scan(&A[found].aksesoris)
 			fmt.Print("Tingkat kategori (1=kasual, 2=semi, 3=formal): ")
-			fmt.Scan(&A[idx].kategori)
+			fmt.Scan(&A[found].kategori)
+			fmt.Print("Cuaca: ")
+			fmt.Scan(&A[found].cuaca)
 			fmt.Print("Tanggal terakhir dipakai (yyyymmdd): ")
-			fmt.Scan(&A[idx].terakhir)
-
+			fmt.Scan(&A[found].terakhir)
 			fmt.Println("\nOutfit berhasil diupdate")
 		} else {
 			fmt.Println("Nomor outfit tidak valid")
 		}
+
 	} else {
 		fmt.Println("Belum ada outfit yang bisa diedit")
 	}
@@ -119,33 +130,30 @@ func hapusOutfit(A *tabOutfit, n *int) {
 }
 
 //nyari warna menggunakan sequential
-func cariWarnaSequential(A tabOutfit, n int) {
+func cariCuacaSequential(A tabOutfit, n int, cuaca string) bool {
 	var k int
-	var warna string
 	var isKetemu bool
 
 	if n == 0 {
 		fmt.Println("Belum ada outfit yang tersimpan.")
-		return
+		return false
 	}
 
-	fmt.Print("Masukkan warna: ")
-	fmt.Scan(&warna)
 	isKetemu = false
 	k = 0
-
 	for !isKetemu && k < n {
-		if A[k].atasan == warna || A[k].bawah == warna || A[k].sepatu == warna || A[k].aksesoris == warna {
+		if A[k].atasan == cuaca || A[k].bawah == cuaca || A[k].sepatu == cuaca || A[k].aksesoris == cuaca {
 			isKetemu = true
 		}
 		k++
 	}
 
 	if isKetemu {
-		fmt.Println("Warna tesebut tersedia")
+		fmt.Println("Cuaca tesebut tersedia")
 	} else {
-		fmt.Println("Warna tesebut tidak tersedia")
+		fmt.Println("Cuaca tesebut tidak tersedia")
 	}
+	return isKetemu
 }
 
 //nyari kategori menggunakan binary
@@ -212,7 +220,7 @@ func insertionSortTerakhirDipakai(A *tabOutfit, n int) {
 //rekomen
 func rekomendasiOutfit(A tabOutfit, n int) {
 	var i, preferensi int
-	var idx int
+	var idx int = -1
 	var cuaca string
 
 	if n == 0 {
@@ -225,30 +233,30 @@ func rekomendasiOutfit(A tabOutfit, n int) {
 	fmt.Print("Masukkan kondisi cuaca (panas/dingin/hujan): ")
 	fmt.Scan(&cuaca)
 
-	for i = 0; i <= n-1; i++ {
-		if A[i].kategori == preferensi && A[i].cuaca == cuaca {
+	if A[i].kategori == preferensi && A[i].cuaca == cuaca {
+		for i = 0; i <= n-1; i++ {
 			if idx == -1 || A[i].terakhir < A[idx].terakhir {
 				idx = i
 			}
 		}
+	} else {
+		fmt.Println("Tidak ada outfit yang cocok")
 	}
 
 	if idx != -1 {
 		fmt.Println("\nRekomendasi outfit terbaik untukmu:")
-		fmt.Printf("Atasan: %s\n", A[idx].atasan)
-		fmt.Printf("Bawahan: %s\n", A[idx].bawah)
-		fmt.Printf("Sepatu: %s\n", A[idx].sepatu)
-		fmt.Printf("Aksesoris: %s\n", A[idx].aksesoris)
+		fmt.Printf("OUTFIT-%d: %s - %s - %s - %s\n", idx+1, A[idx].atasan, A[idx].bawah, A[idx].sepatu, A[idx].aksesoris)
 		fmt.Printf("Cocok untuk cuaca: %s\n", A[idx].cuaca)
 	} else {
 		fmt.Println("Tidak ada outfit yang cocok")
 	}
+	fmt.Println()
 }
 
 func main() {
 	var pakaian tabOutfit
-	var nPakaian, menu, cari int
-	var out string
+	var nPakaian, menu, cari, search int
+	var out, cuaca string
 
 	for {
 		fmt.Println("=== MENU ===")
@@ -257,12 +265,11 @@ func main() {
 		fmt.Println("3. Edit Outfit")
 		fmt.Println("4. Hapus Outfit")
 		fmt.Println("5. Rekomendasi Outfit")
-		fmt.Println("6. Urutkan Berdasarkan Terakhir Dipakai") // jgn lupa urut sesuai selec sort kategori
-		fmt.Println("7. Cari Outfit Berdasarkan Warna")
-		fmt.Println("8. Cari Outfit Berdasarkan Kategori")
+		fmt.Println("6. Searching")
 		fmt.Println("0. Keluar")
 		fmt.Print("Pilih menu: ")
 		fmt.Scan(&menu)
+		fmt.Scanln()
 
 		switch menu {
 		case 1:
@@ -270,23 +277,37 @@ func main() {
 		case 2:
 			tampilLemari(pakaian, nPakaian)
 		case 3:
-			editOutfit(pakaian, nPakaian)
+			editOutfit(&pakaian, nPakaian)
 		case 4:
 			hapusOutfit(&pakaian, &nPakaian)
 		case 5:
 			rekomendasiOutfit(pakaian, nPakaian)
 		case 6:
-			insertionSortTerakhirDipakai(&pakaian, nPakaian)
-		case 7:
-			cariWarnaSequential(pakaian, nPakaian)
-		case 8:
-			fmt.Print("Masukkan kategori yang ingin dicari (1=kasual, 2=semi, 3=formal): ")
-			fmt.Scan(&cari)
-			if cariKategoriBinary(pakaian, nPakaian, cari) {
-				fmt.Println("Outfit dengan kategori tersebut ditemukan")
-				tampilLemari(pakaian, nPakaian)
-			} else {
-				fmt.Println("Outfit dengan kategori tersebut tidak ditemukan")
+			fmt.Println("1. Cari Berdasarkan Kategori")
+			fmt.Println("2. Cari Berdasarkan Cuaca")
+			fmt.Print("Masukkan yang ingin dicari: ")
+			fmt.Scan(&search)
+			switch search {
+			case 1:
+				fmt.Print("Masukkan kategori yang ingin dicari (1=kasual, 2=semi, 3=formal): ")
+				fmt.Scan(&cari)
+				if cariKategoriBinary(pakaian, nPakaian, cari) {
+					fmt.Println("Outfit dengan kategori tersebut ditemukan")
+					tampilLemari(pakaian, nPakaian)
+				} else {
+					fmt.Println("Outfit dengan kategori tersebut tidak ditemukan")
+				}
+			case 2:
+				fmt.Print("Masukkan kategori yang ingin dicari (1=kasual, 2=semi, 3=formal): ")
+				fmt.Scan(&cuaca)
+				if cariCuacaSequential(pakaian, nPakaian, cuaca) {
+					fmt.Println("Outfit dengan kategori tersebut ditemukan")
+					tampilLemari(pakaian, nPakaian)
+				} else {
+					fmt.Println("Outfit dengan kategori tersebut tidak ditemukan")
+				}
+			default:
+				fmt.Println("Kembali ke menu")
 			}
 		case 0:
 			fmt.Print("Yakin mau keluar? (y/n): ")
