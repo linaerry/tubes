@@ -22,7 +22,7 @@ func inputOutfit(A *tabOutfit, n *int) {
 	tambah = "y"
 
 	for (tambah == "y" || tambah == "Y") && *n < NMAX {
-		fmt.Println("Masukkan data outfit:")
+		fmt.Println("Masukkan data outfit( Mohon ganti spasi dengan '_'):")
 		fmt.Print("Atasan: ")
 		fmt.Scan(&A[*n].atasan)
 		fmt.Print("Bawahan: ")
@@ -176,47 +176,48 @@ func cariKategoriBinary(A tabOutfit, n int, cari int) bool {
 }
 
 //ngurutin outfit berdasarkan kategori baju
-// //ngurutin outfit berdasarkan kategori baju
-// func selectionSortkategori(A *tabOutfit, n int) {
-// 	var pass, idx, i int
-// 	var temp outfit
+func selectionSortkategori(A *tabOutfit, n int) {
+	var pass, idx, i int
+	var temp outfit
 
-// 	pass = 0
-// 	for pass < n-1 {
-// 		idx = pass - 1
-// 		i = pass
-// 		for i < n {
-// 			if A[idx].kategori < A[i].kategori {
-// 				idx = i
-// 			}
-// 			i++
-// 		}
-// 		temp = A[pass-1]
-// 		A[pass-1] = A[idx]
-// 		A[idx] = temp
-// 		pass++
-// 	}
-// 	fmt.Println("Outfit sudah diurutkan berdasarkan kategori")
-// }
+	pass = 1
+	for pass < n-1 {
+		idx = pass - 1
+		i = pass
+		for i < n {
+			if A[idx].kategori < A[i].kategori {
+				idx = i
+			}
+			i++
+		}
+		temp = A[pass-1]
+		A[pass-1] = A[idx]
+		A[idx] = temp
+		pass++
+	}
+	fmt.Println("Outfit sudah diurutkan berdasarkan kategori")
+}
 
-// //ngurutin outfit yang terakhir dipakai ke yang paling baru dipake
-// func insertionSortTerakhirDipakai(A *tabOutfit, n int) {
-// 	var i, j int
-// 	var temp outfit
+//ngurutin outfit yang terakhir dipakai ke yang paling baru dipake
+func insertionSortTerakhirDipakai(A *tabOutfit, n int) {
+	var i, pass int
+	var temp outfit
 
-// 	for i = 0; i <= n-1; i++ {
-// 		temp = A[i]
-// 		j = i - 1
+	pass = 1
+	for pass <= n-1 {
+		i = pass
+		temp = A[pass]
 
-// 		//pengurutan dari tanggal lama ke baru
-// 		for j >= 0 && A[i].terakhir > temp.terakhir {
-// 			A[j+1] = A[j]
-// 			j--
-// 		}
-// 		A[j+1] = temp
-// 	}
-// 	fmt.Println("Outfit sudah diurutkan sesuai terakhir digunakan")
-// }
+		//pengurutan dari tanggal baru ke lama (descending)
+		for i > 0 && A[i].terakhir < temp.terakhir {
+			A[i] = A[i-1]
+			i--
+		}
+		A[i] = temp
+		pass++
+	}
+	fmt.Println("Outfit sudah diurutkan sesuai terakhir digunakan")
+}
 
 //rekomen
 func rekomendasiOutfit(A tabOutfit, n int) {
@@ -256,7 +257,7 @@ func rekomendasiOutfit(A tabOutfit, n int) {
 
 func main() {
 	var pakaian tabOutfit
-	var nPakaian, menu, cari, search int
+	var nPakaian, menu, cari, search, sort int
 	var out, cuaca string
 
 	for {
@@ -267,6 +268,7 @@ func main() {
 		fmt.Println("4. Hapus Outfit")
 		fmt.Println("5. Rekomendasi Outfit")
 		fmt.Println("6. Searching")
+		fmt.Println("7. Sorting")
 		fmt.Println("0. Keluar")
 		fmt.Print("Pilih menu: ")
 		fmt.Scan(&menu)
@@ -309,6 +311,23 @@ func main() {
 				}
 			default:
 				fmt.Println("Kembali ke menu")
+			}
+		case 7:
+			fmt.Println("1. Urutkan Berdasarkan Kategori")
+			fmt.Println("2. Urutkan Berdasarkan Terakhir digunakan")
+			fmt.Print("Masukkan yang ingin diurutkan: ")
+			fmt.Scan(&sort)
+			switch sort {
+			case 1:
+				fmt.Print("Data Outfit diurutkan dari formal ke kasual")
+				fmt.Scan(&sort)
+				fmt.Println("Berikut Data Outfit diurutkan dari formal ke kasual")
+				selectionSortkategori(&pakaian, nPakaian)
+			case 2:
+				fmt.Print("Data Outfit diurutkan dari tanggal terbaru ke lama")
+				fmt.Scan(&sort)
+				fmt.Println("Berikut Data Outfit diurutkan dari yang terbaru ke lama")
+				insertionSortTerakhirDipakai(&pakaian, nPakaian)
 			}
 		case 0:
 			fmt.Print("Yakin mau keluar? (y/n): ")
