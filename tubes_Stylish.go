@@ -18,7 +18,7 @@ type tabOutfit [NMAX]outfit
 
 //menginput atau nambah baju
 func inputOutfit(A *tabOutfit, n *int) {
-	var tambah string
+	var tambah, tgl string
 	tambah = "y"
 
 	for (tambah == "y" || tambah == "Y") && *n < NMAX {
@@ -35,6 +35,9 @@ func inputOutfit(A *tabOutfit, n *int) {
 		fmt.Scan(&A[*n].kategori)
 		fmt.Print("Cocok digunakan di cuaca apa?(panas, dingin, hujan): ")
 		fmt.Scan(&A[*n].cuaca)
+		fmt.Print("Tanggal terakhir dipakai (dd/mm/yyyy): ")
+		fmt.Scan(&tgl)
+		A[*n].terakhir = tanggal(tgl)
 
 		*n = *n + 1
 
@@ -63,6 +66,7 @@ func tampilLemari(A tabOutfit, n int) {
 //kalo pengen ngedit isi lemari
 func editOutfit(A *tabOutfit, n int) {
 	var i, kode, found int
+	var tgl string
 	found = -1
 
 	if n != 0 {
@@ -94,8 +98,10 @@ func editOutfit(A *tabOutfit, n int) {
 			fmt.Scan(&A[found].kategori)
 			fmt.Print("Cuaca: ")
 			fmt.Scan(&A[found].cuaca)
-			fmt.Print("Tanggal terakhir dipakai (yyyymmdd): ")
-			fmt.Scan(&A[found].terakhir)
+			fmt.Print("Tanggal terakhir dipakai (dd/mm/yyyy): ")
+			fmt.Scan(&tgl)
+			A[found].terakhir = tanggal(tgl)
+
 			fmt.Println("\nOutfit berhasil diupdate")
 		} else {
 			fmt.Println("Nomor outfit tidak valid")
@@ -142,7 +148,7 @@ func cariCuacaSequential(A tabOutfit, n int, cuaca string) bool {
 	isKetemu = false
 	k = 0
 	for !isKetemu && k < n {
-		if A[k].atasan == cuaca || A[k].bawah == cuaca || A[k].sepatu == cuaca || A[k].aksesoris == cuaca {
+		if A[k].cuaca == cuaca {
 			isKetemu = true
 		}
 		k++
@@ -198,6 +204,12 @@ func selectionSortkategori(A *tabOutfit, n int) {
 	fmt.Println("Outfit sudah diurutkan berdasarkan kategori")
 }
 
+func tanggal(tgl string) int {
+	var hari, bulan, tahun int
+	fmt.Sscanf(tgl, "%2d/%2d/%4d", &hari, &bulan, &tahun)
+	return tahun*10000 + bulan*100 + hari
+}
+
 //ngurutin outfit yang terakhir dipakai ke yang paling baru dipake
 func insertionSortTerakhirDipakai(A *tabOutfit, n int) {
 	var i, pass int
@@ -209,7 +221,7 @@ func insertionSortTerakhirDipakai(A *tabOutfit, n int) {
 		temp = A[pass]
 
 		//pengurutan dari tanggal baru ke lama (descending)
-		for i > 0 && A[i].terakhir < temp.terakhir {
+		for i > 0 && temp.terakhir > A[i-1].terakhir {
 			A[i] = A[i-1]
 			i--
 		}
@@ -235,14 +247,14 @@ func rekomendasiOutfit(A tabOutfit, n int) {
 	fmt.Print("Masukkan kondisi cuaca (panas/dingin/hujan): ")
 	fmt.Scan(&cuaca)
 
-	if A[i].kategori == preferensi && A[i].cuaca == cuaca {
-		for i = 0; i <= n-1; i++ {
+	for i = 0; i <= n-1; i++ {
+		if A[i].kategori == preferensi && A[i].cuaca == cuaca {
 			if idx == -1 || A[i].terakhir < A[idx].terakhir {
 				idx = i
 			}
+		} else {
+			fmt.Println("Tidak ada outfit yang cocok")
 		}
-	} else {
-		fmt.Println("Tidak ada outfit yang cocok")
 	}
 
 	if idx != -1 {
@@ -304,10 +316,10 @@ func main() {
 				fmt.Print("Masukkan kategori yang ingin dicari (1=kasual, 2=semi, 3=formal): ")
 				fmt.Scan(&cuaca)
 				if cariCuacaSequential(pakaian, nPakaian, cuaca) {
-					fmt.Println("Outfit dengan kategori tersebut ditemukan")
+					fmt.Println("Outfit dengan cuaca tersebut ditemukan")
 					tampilLemari(pakaian, nPakaian)
 				} else {
-					fmt.Println("Outfit dengan kategori tersebut tidak ditemukan")
+					fmt.Println("Outfit dengan cuaca tersebut tidak ditemukan")
 				}
 			default:
 				fmt.Println("Kembali ke menu")
@@ -320,14 +332,12 @@ func main() {
 			switch sort {
 			case 1:
 				fmt.Print("Data Outfit diurutkan dari formal ke kasual")
-				fmt.Scan(&sort)
-				fmt.Println("Berikut Data Outfit diurutkan dari formal ke kasual")
 				selectionSortkategori(&pakaian, nPakaian)
+				tampilLemari(pakaian, nPakaian)
 			case 2:
 				fmt.Print("Data Outfit diurutkan dari tanggal terbaru ke lama")
-				fmt.Scan(&sort)
-				fmt.Println("Berikut Data Outfit diurutkan dari yang terbaru ke lama")
 				insertionSortTerakhirDipakai(&pakaian, nPakaian)
+				tampilLemari(pakaian, nPakaian)
 			}
 		case 0:
 			fmt.Print("Yakin mau keluar? (y/n): ")
