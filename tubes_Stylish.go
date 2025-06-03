@@ -5,13 +5,13 @@ import "fmt"
 const NMAX int = 100
 
 type outfit struct {
-	atasan string
-	bawah string
-	sepatu string
+	atasan    string
+	bawah     string
+	sepatu    string
 	aksesoris string
-	kategori int    //1 = kasual, 2 = semi, 3 = formal
-	cuaca string //"panas", "dingin", "hujan"
-	terakhir int    //terakhir digunakan
+	kategori  int    //1 = kasual, 2 = semi, 3 = formal
+	cuaca     string //"panas", "dingin", "hujan"
+	terakhir  int    //terakhir digunakan
 }
 
 type tabOutfit [NMAX]outfit
@@ -247,14 +247,14 @@ func rekomendasiOutfit(A tabOutfit, n int) {
 	fmt.Print("Masukkan kondisi cuaca (panas/dingin/hujan): ")
 	fmt.Scan(&cuaca)
 
-	for i = 0; i <= n-1; i++ {
-		if A[i].kategori == preferensi && A[i].cuaca == cuaca {
+	if A[i].kategori == preferensi && A[i].cuaca == cuaca {
+		for i = 0; i <= n-1; i++ {
 			if idx == -1 || A[i].terakhir < A[idx].terakhir {
 				idx = i
 			}
-		} else {
-			fmt.Println("Tidak ada outfit yang cocok")
 		}
+	} else {
+		fmt.Println("Tidak ada outfit yang cocok")
 	}
 
 	if idx != -1 {
@@ -313,7 +313,7 @@ func main() {
 					fmt.Println("Outfit dengan kategori tersebut tidak ditemukan")
 				}
 			case 2:
-				fmt.Print("Masukkan kategori yang ingin dicari (1=kasual, 2=semi, 3=formal): ")
+				fmt.Print("Masukkan cuaca yang ingin dicari (panas/dingin/hujan): ")
 				fmt.Scan(&cuaca)
 				if cariCuacaSequential(pakaian, nPakaian, cuaca) {
 					fmt.Println("Outfit dengan cuaca tersebut ditemukan")
