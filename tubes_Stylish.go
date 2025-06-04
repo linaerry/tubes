@@ -16,6 +16,98 @@ type outfit struct {
 
 type tabOutfit [NMAX]outfit
 
+func main() {
+	var pakaian tabOutfit
+	var nPakaian, menu, cari, search, sort, idx int
+	var out, cuaca string
+
+	for {
+		fmt.Println("=== MENU ===")
+		fmt.Println("1. Tambah Outfit")
+		fmt.Println("2. Tampilkan Lemari")
+		fmt.Println("3. Edit Outfit")
+		fmt.Println("4. Hapus Outfit")
+		fmt.Println("5. Rekomendasi Outfit")
+		fmt.Println("6. Searching")
+		fmt.Println("7. Sorting")
+		fmt.Println("0. Keluar")
+		fmt.Print("Pilih menu: ")
+		fmt.Scan(&menu)
+		fmt.Scanln()
+
+		switch menu {
+		case 1:
+			inputOutfit(&pakaian, &nPakaian)
+		case 2:
+			tampilLemari(pakaian, nPakaian)
+		case 3:
+			editOutfit(&pakaian, nPakaian)
+		case 4:
+			hapusOutfit(&pakaian, &nPakaian)
+		case 5:
+			rekomendasiOutfit(pakaian, nPakaian)
+		case 6:
+			fmt.Println("1. Cari Berdasarkan Kategori")
+			fmt.Println("2. Cari Berdasarkan Cuaca")
+			fmt.Print("Masukkan yang ingin dicari: ")
+			fmt.Scan(&search)
+			switch search {
+			case 1:
+				fmt.Print("Masukkan kategori yang ingin dicari (1=kasual, 2=semi, 3=formal): ")
+				fmt.Scan(&cari)
+				idx = cariKategoriBinary(pakaian, nPakaian, cari)
+				if idx != -1 {
+					fmt.Println("Outfit dengan kategori tersebut ditemukan")
+					tampilLemari(pakaian, nPakaian)
+				} else {
+					fmt.Println("Outfit dengan kategori tersebut tidak ditemukan")
+				}
+			case 2:
+				fmt.Print("Masukkan cuaca yang ingin dicari (panas/dingin/hujan): ")
+				fmt.Scan(&cuaca)
+				if cariCuacaSequential(pakaian, nPakaian, cuaca) {
+					fmt.Println("Outfit dengan cuaca tersebut ditemukan")
+					tampilLemari(pakaian, nPakaian)
+				} else {
+					fmt.Println("Outfit dengan cuaca tersebut tidak ditemukan")
+				}
+			default:
+				fmt.Println("Kembali ke menu.")
+			}
+		case 7:
+			fmt.Println("1. Urutkan Berdasarkan Kategori")
+			fmt.Println("2. Urutkan Berdasarkan Terakhir digunakan")
+			fmt.Print("Masukkan yang ingin diurutkan: ")
+			fmt.Scan(&sort)
+			switch sort {
+			case 1:
+				fmt.Print("Data Outfit diurutkan dari formal ke kasual")
+				selectionSortkategori(&pakaian, nPakaian)
+				tampilLemari(pakaian, nPakaian)
+			case 2:
+				fmt.Print("Data Outfit diurutkan dari tanggal terbaru ke lama")
+				insertionSortTerakhirDipakai(&pakaian, nPakaian)
+				tampilLemari(pakaian, nPakaian)
+			}
+		case 0:
+			fmt.Print("Yakin mau keluar? (y/n): ")
+			fmt.Scan(&out)
+			if out == "y" || out == "Y" {
+				fmt.Println("Terima kasih sudah pakai program ini!")
+				return
+			}
+		default:
+			fmt.Println("Menu tidak valid.")
+		}
+	}
+}
+
+func tanggal(tgl string) int {
+	var hari, bulan, tahun int
+	fmt.Sscanf(tgl, "%2d/%2d/%4d", &hari, &bulan, &tahun)
+	return tahun*10000 + bulan*100 + hari
+}
+
 //menginput atau nambah baju
 func inputOutfit(A *tabOutfit, n *int) {
 	var tambah, tgl string
@@ -57,6 +149,7 @@ func tampilLemari(A tabOutfit, n int) {
 	if n != 0 {
 		for i = 0; i < n; i++ {
 			fmt.Printf("OUTFIT-%d: %s - %s - %s - %s\n", i+1, A[i].atasan, A[i].bawah, A[i].sepatu, A[i].aksesoris)
+			fmt.Printf("Kategori (1=kasual, 2=semi, 3=formal): %d || Cuaca: %s || Terakhir dipakai: %d\n", A[i].kategori, A[i].cuaca, A[i].terakhir)
 		}
 	} else {
 		fmt.Println("Lemari kosong")
@@ -122,7 +215,7 @@ func hapusOutfit(A *tabOutfit, n *int) {
 	}
 
 	tampilLemari(*A, *n)
-	fmt.Println("Pilih outfit yang ingin dihapus:")
+	fmt.Print("Pilih outfit yang ingin dihapus: ")
 	fmt.Scan(&idx)
 	idx--
 
@@ -130,12 +223,12 @@ func hapusOutfit(A *tabOutfit, n *int) {
 		for i = idx; i < *n-1; i++ {
 			A[i] = A[i+1]
 		}
-		*n--
+		*n = *n - 1
 		fmt.Println("Outfit sudah dihapus")
 	}
 }
 
-//nyari warna menggunakan sequential
+//nyari cuaca menggunakan sequential
 func cariCuacaSequential(A tabOutfit, n int, cuaca string) bool {
 	var k int
 	var isKetemu bool
@@ -162,52 +255,46 @@ func cariCuacaSequential(A tabOutfit, n int, cuaca string) bool {
 	return isKetemu
 }
 
+//ngurutin outfit berdasarkan kategori baju formal ke kasual
+func selectionSortkategori(A *tabOutfit, n int) {
+	var pass, idx, i int
+	var temp outfit
+
+	for pass = 0; pass < n-1; pass++ {
+		idx = pass
+		for i = pass + 1; i < n; i++ {
+			if A[i].kategori < A[idx].kategori {
+				idx = i
+			}
+		}
+		temp = A[pass]
+		A[pass] = A[idx]
+		A[idx] = temp
+	}
+
+	fmt.Println("Outfit sudah diurutkan berdasarkan kategori")
+}
+
 //nyari kategori menggunakan binary
-func cariKategoriBinary(A tabOutfit, n int, cari int) bool {
-	var left, right, mid int
+func cariKategoriBinary(A tabOutfit, n int, cari int) int {
+	selectionSortkategori(&A, n)
+
+	var left, right, mid, found int
+
 	left = 0
 	right = n - 1
-
-	for left <= right {
+	found = -1
+	for left <= right && found == -1 {
 		mid = (left + right) / 2
 		if A[mid].kategori == cari {
-			return true
+			found = mid
 		} else if cari < A[mid].kategori {
 			right = mid - 1
 		} else {
 			left = mid + 1
 		}
 	}
-	return false
-}
-
-//ngurutin outfit berdasarkan kategori baju
-func selectionSortkategori(A *tabOutfit, n int) {
-	var pass, idx, i int
-	var temp outfit
-
-	pass = 1
-	for pass < n-1 {
-		idx = pass - 1
-		i = pass
-		for i < n {
-			if A[idx].kategori < A[i].kategori {
-				idx = i
-			}
-			i++
-		}
-		temp = A[pass-1]
-		A[pass-1] = A[idx]
-		A[idx] = temp
-		pass++
-	}
-	fmt.Println("Outfit sudah diurutkan berdasarkan kategori")
-}
-
-func tanggal(tgl string) int {
-	var hari, bulan, tahun int
-	fmt.Sscanf(tgl, "%2d/%2d/%4d", &hari, &bulan, &tahun)
-	return tahun*10000 + bulan*100 + hari
+	return found
 }
 
 //ngurutin outfit yang terakhir dipakai ke yang paling baru dipake
@@ -231,7 +318,7 @@ func insertionSortTerakhirDipakai(A *tabOutfit, n int) {
 	fmt.Println("Outfit sudah diurutkan sesuai terakhir digunakan")
 }
 
-//rekomen
+//rekomen or sequential search
 func rekomendasiOutfit(A tabOutfit, n int) {
 	var i, preferensi int
 	var idx int = -1
@@ -247,107 +334,20 @@ func rekomendasiOutfit(A tabOutfit, n int) {
 	fmt.Print("Masukkan kondisi cuaca (panas/dingin/hujan): ")
 	fmt.Scan(&cuaca)
 
-	if A[i].kategori == preferensi && A[i].cuaca == cuaca {
-		for i = 0; i <= n-1; i++ {
+	for i = 0; i <= n-1; i++ {
+		if A[i].kategori == preferensi && A[i].cuaca == cuaca {
 			if idx == -1 || A[i].terakhir < A[idx].terakhir {
 				idx = i
 			}
 		}
-	} else {
-		fmt.Println("Tidak ada outfit yang cocok")
 	}
 
 	if idx != -1 {
 		fmt.Println("\nRekomendasi outfit terbaik untukmu:")
 		fmt.Printf("OUTFIT-%d: %s - %s - %s - %s\n", idx+1, A[idx].atasan, A[idx].bawah, A[idx].sepatu, A[idx].aksesoris)
-		fmt.Printf("Cocok untuk cuaca: %s\n", A[idx].cuaca)
+		fmt.Printf("Kategori: %d - Cocok untuk cuaca: %s - Terakhir dipakai: %d\n", A[idx].kategori, A[idx].cuaca, A[idx].terakhir)
 	} else {
 		fmt.Println("Tidak ada outfit yang cocok")
 	}
 	fmt.Println()
-}
-
-func main() {
-	var pakaian tabOutfit
-	var nPakaian, menu, cari, search, sort int
-	var out, cuaca string
-
-	for {
-		fmt.Println("=== MENU ===")
-		fmt.Println("1. Tambah Outfit")
-		fmt.Println("2. Tampilkan Lemari")
-		fmt.Println("3. Edit Outfit")
-		fmt.Println("4. Hapus Outfit")
-		fmt.Println("5. Rekomendasi Outfit")
-		fmt.Println("6. Searching")
-		fmt.Println("7. Sorting")
-		fmt.Println("0. Keluar")
-		fmt.Print("Pilih menu: ")
-		fmt.Scan(&menu)
-		fmt.Scanln()
-
-		switch menu {
-		case 1:
-			inputOutfit(&pakaian, &nPakaian)
-		case 2:
-			tampilLemari(pakaian, nPakaian)
-		case 3:
-			editOutfit(&pakaian, nPakaian)
-		case 4:
-			hapusOutfit(&pakaian, &nPakaian)
-		case 5:
-			rekomendasiOutfit(pakaian, nPakaian)
-		case 6:
-			fmt.Println("1. Cari Berdasarkan Kategori")
-			fmt.Println("2. Cari Berdasarkan Cuaca")
-			fmt.Print("Masukkan yang ingin dicari: ")
-			fmt.Scan(&search)
-			switch search {
-			case 1:
-				fmt.Print("Masukkan kategori yang ingin dicari (1=kasual, 2=semi, 3=formal): ")
-				fmt.Scan(&cari)
-				if cariKategoriBinary(pakaian, nPakaian, cari) {
-					fmt.Println("Outfit dengan kategori tersebut ditemukan")
-					tampilLemari(pakaian, nPakaian)
-				} else {
-					fmt.Println("Outfit dengan kategori tersebut tidak ditemukan")
-				}
-			case 2:
-				fmt.Print("Masukkan cuaca yang ingin dicari (panas/dingin/hujan): ")
-				fmt.Scan(&cuaca)
-				if cariCuacaSequential(pakaian, nPakaian, cuaca) {
-					fmt.Println("Outfit dengan cuaca tersebut ditemukan")
-					tampilLemari(pakaian, nPakaian)
-				} else {
-					fmt.Println("Outfit dengan cuaca tersebut tidak ditemukan")
-				}
-			default:
-				fmt.Println("Kembali ke menu")
-			}
-		case 7:
-			fmt.Println("1. Urutkan Berdasarkan Kategori")
-			fmt.Println("2. Urutkan Berdasarkan Terakhir digunakan")
-			fmt.Print("Masukkan yang ingin diurutkan: ")
-			fmt.Scan(&sort)
-			switch sort {
-			case 1:
-				fmt.Print("Data Outfit diurutkan dari formal ke kasual")
-				selectionSortkategori(&pakaian, nPakaian)
-				tampilLemari(pakaian, nPakaian)
-			case 2:
-				fmt.Print("Data Outfit diurutkan dari tanggal terbaru ke lama")
-				insertionSortTerakhirDipakai(&pakaian, nPakaian)
-				tampilLemari(pakaian, nPakaian)
-			}
-		case 0:
-			fmt.Print("Yakin mau keluar? (y/n): ")
-			fmt.Scan(&out)
-			if out == "y" || out == "Y" {
-				fmt.Println("Terima kasih sudah pakai program ini!")
-				return
-			}
-		default:
-			fmt.Println("Menu tidak valid.")
-		}
-	}
 }
