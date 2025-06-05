@@ -333,7 +333,7 @@ func insertionSortTerakhirDipakai(A *tabOutfit, n int) {
 
 //rekomen or sequential search
 func rekomendasiOutfit(A tabOutfit, n int) {
-	var i, preferensi int
+	var i, kategori int
 	var idx int = -1
 	var cuaca string
 
@@ -343,12 +343,12 @@ func rekomendasiOutfit(A tabOutfit, n int) {
 	}
 
 	fmt.Print("\nMasukkan tingkat kategori yang diinginkan (1=kasual, 2=semi, 3=formal): ")
-	fmt.Scan(&preferensi)
+	fmt.Scan(&kategori)
 	fmt.Print("Masukkan kondisi cuaca (panas/dingin/hujan): ")
 	fmt.Scan(&cuaca)
 
 	for i = 0; i <= n-1; i++ {
-		if A[i].kategori == preferensi && A[i].cuaca == cuaca {
+		if A[i].kategori == kategori && A[i].cuaca == cuaca {
 			if idx == -1 || A[i].terakhir < A[idx].terakhir {
 				idx = i
 			}
@@ -364,3 +364,4 @@ func rekomendasiOutfit(A tabOutfit, n int) {
 	}
 	fmt.Println()
 }
+
