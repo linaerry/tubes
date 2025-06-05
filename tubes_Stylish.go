@@ -5,21 +5,21 @@ import "fmt"
 const NMAX int = 100
 
 type outfit struct {
-	outer string
-	atasan string
-	bawah string
-	sepatu string
+	outer     string
+	atasan    string
+	bawah     string
+	sepatu    string
 	aksesoris string
-	kategori int    //1 = kasual, 2 = semi, 3 = formal
-	cuaca string //"panas", "dingin", "hujan"
-	terakhir int    //terakhir digunakan
+	kategori  int    //1 = kasual, 2 = semi, 3 = formal
+	cuaca     string //"panas", "dingin", "hujan"
+	terakhir  int    //terakhir digunakan
 }
 
 type tabOutfit [NMAX]outfit
 
 func main() {
 	var pakaian tabOutfit
-	var nPakaian, menu, cari, search, sort, idx int
+	var nPakaian, menu, cari, search, sort int
 	var out, cuaca string
 
 	for {
@@ -262,7 +262,7 @@ func selectionSortkategori(A *tabOutfit, n int) {
 	for pass = 0; pass < n-1; pass++ {
 		idx = pass
 		for i = pass + 1; i < n; i++ {
-			if A[i].kategori > A[idx].kategori {
+			if A[i].kategori < A[idx].kategori {
 				idx = i
 			}
 		}
